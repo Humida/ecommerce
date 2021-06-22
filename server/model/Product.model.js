@@ -1,16 +1,22 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const productSchema = Schema({
+const RateProduct = require("./RateProduct.model");
+
+const ProductSchema = new Schema({
   quantity: {
     type: Number,
     default: null,
   },
-  trandemark: {
+  quantitySold: {
+    type: Number,
+    default: 0,
+  },
+  tradeMark: {
     type: String,
     default: null,
   },
-  nameproduct: {
+  nameProduct: {
     type: String,
     default: null,
   },
@@ -18,13 +24,22 @@ const productSchema = Schema({
     type: Number,
     default: null,
   },
-  quantitySold: {
-    type: Number,
+  type: {
+    type: String,
     default: null,
   },
   voucher: {
     type: String,
     default: null,
+  },
+  detail: {
+    type: String,
+    default: null,
+  },
+  rate: [RateProduct],
+  deleteSoft: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,
@@ -36,5 +51,5 @@ const productSchema = Schema({
   },
 });
 
-const product = mongoose.model("product", productSchema);
-module.exports = product;
+const Product = mongoose.model("Product", ProductSchema);
+module.exports = Product;

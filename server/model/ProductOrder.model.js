@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const productOrderSchema = new Schema({
+const ProductOrderSchema = new Schema({
   quantity: {
     type: Number,
     default: 1,
@@ -21,6 +21,6 @@ const productOrderSchema = new Schema({
   },
 });
 
-const productOrder = mongoose.model("productOrder", productOrderSchema);
+const ProductOrder = mongoose.model("ProductOrder", ProductOrderSchema);
 
-module.epxorts = productOrder;
+module.epxorts = ProductOrder;

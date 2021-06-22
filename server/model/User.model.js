@@ -1,13 +1,19 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const ProductOrderSchema = require("../model/ProductOrder.model");
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
   name: {
     type: String,
     default: null,
   },
+  password: {
+    type: String,
+    default: null,
+  },
   avatar: {
-    type: Buller,
+    type: Buffer,
+    default: null,
   },
   email: {
     type: String,
@@ -16,14 +22,17 @@ const userSchema = new Schema({
   },
   phoneNumber: {
     type: String,
-    unique: true,
     default: null,
   },
   address: {
     type: String,
     default: null,
   },
-  productsOrder: [productOrder],
+  productsOrder: [ProductOrderSchema],
+  deleteSoft: {
+    type: Boolean,
+    default: false,
+  },
   createAt: {
     type: Date,
     default: Date.now(),
@@ -33,6 +42,5 @@ const userSchema = new Schema({
     default: Date.now(),
   },
 });
-
-const user = mongoose.model("user", userSchema);
-module.exports = user;
+const User = mongoose.model("User", UserSchema);
+module.exports = User;
