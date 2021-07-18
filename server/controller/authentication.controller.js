@@ -8,7 +8,7 @@ module.exports = {
     const checkEmail = await User.findOne({ email: email });
     const checkName = await User.findOne({ name: name });
 
-    if (checkEmail) return res.send("email invalid");
+    if (checkEmail) return res.status(400).send("email invalid");
 
     if (checkName) return res.send("name invalid");
 
@@ -49,7 +49,30 @@ module.exports = {
       }
     });
   },
-  updateInfo: async (req, res, next) => {},
-  deleteSoft: async (req, res, next) => {},
-  delete: async (req, res, next) => {},
+  updateInfo: async (req, res, next) => {
+    try {
+      const data = req.body.user;
+      const id = req.body.id;
+      await User.findOneAndUpdate(id, data);
+    } catch (err) {
+      throw err;
+    }
+  },
+  deleteSoft: async (req, res, next) => {
+    const id = req.body.id;
+    try {
+      User.findOneAndUpdate(id, { deleteSoft: true });
+    } catch (err) {
+      throw err;
+    }
+  },
+  delete: async (req, res, next) => {
+    const id = req.body;
+
+    try {
+      await User.findOneAndDelete(id);
+    } catch (err) {
+      throw err;
+    }
+  },
 };

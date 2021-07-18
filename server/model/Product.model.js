@@ -1,13 +1,49 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const RateProduct = require("./RateProduct.model");
+// const RateProduct = require("./RateProduct.model").schema;
+
+const RateProductSchema = new Schema({
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+  rate: {
+    type: Number,
+    default: 5,
+  },
+  comment: {
+    type: String,
+    default: null,
+  },
+});
+
+const PropertiesProduct = new Schema({
+  images: {
+    type: Array,
+    default: [],
+  },
+  size: {
+    type: Number,
+  },
+  color: {
+    type: String,
+  },
+  quantity: {
+    type: Number,
+  },
+});
 
 const ProductSchema = new Schema({
   quantity: {
     type: Number,
     default: null,
   },
+  images: {
+    type: Array,
+    default: ["http://placehold.jp/500x500.png"],
+  },
+  properties: [PropertiesProduct],
   quantitySold: {
     type: Number,
     default: 0,
@@ -17,6 +53,10 @@ const ProductSchema = new Schema({
     default: null,
   },
   nameProduct: {
+    type: String,
+    default: null,
+  },
+  classify: {
     type: String,
     default: null,
   },
@@ -36,7 +76,7 @@ const ProductSchema = new Schema({
     type: String,
     default: null,
   },
-  rate: [RateProduct],
+  rate: [RateProductSchema],
   deleteSoft: {
     type: Boolean,
     default: false,
@@ -52,4 +92,5 @@ const ProductSchema = new Schema({
 });
 
 const Product = mongoose.model("Product", ProductSchema);
+
 module.exports = Product;

@@ -1,4 +1,5 @@
 const ProductOrder = require("../model/ProductOrder.model");
+
 const Order = require("../model/Order.model");
 const User = require("../model/User.model");
 const Product = require("../model/Product.model");
@@ -6,29 +7,32 @@ const Product = require("../model/Product.model");
 module.exports = {
   buy: async (req, res, next) => {
     try {
-      const userId = req.body.id;
-      const listProductOrder = req.body.products.map((product) => {
-        let productOrder = new ProductOrder(product);
-        return productOrder;
+      const { info, products } = req.body;
+
+      const totalPayment = products.reduce((sum, product) => {
+        return sum + product.product.price;
+      }, 0);
+      console.log(totalPayment);
+
+      const productsModel = products.map((product) => {
+        product = new Product(product.product);
+        return product;
       });
-      const infoOrder = Object.assign({}, req.body.info);
+
+      const infoOrder = Object.assign({}, info, { totalPayment: totalPayment });
+
       const order = new Order(infoOrder);
-      listProductOrder.forEach((product) => {
+
+      productsModel.forEach((product) => {
         order.productsOrder.push(product);
       });
-      await order.save();
 
-      if (!userId) return res.send("Order Success");
+      const newOrder = await order.save();
 
-      const user = await User.findOne({ _id: id });
-
-      user.productsOrder.push(order);
-
-      await user.save();
-
-      res.send("order Success");
+      if (newOrder === order) res.status(200).send("ok");
     } catch (err) {
       console.log(err);
+      res.status(400).send(err);
     }
   },
   deleteOrder: async (req, res, next) => {
@@ -39,6 +43,6 @@ module.exports = {
   deleteSort: async (req, res, next) => {
     const id = req.body.id;
     await Product.findOneAndUpdate({ _id: id }, { deleteSort: true });
-    res.status = 200;
+    res.status(200).send("delete sort");
   },
 };

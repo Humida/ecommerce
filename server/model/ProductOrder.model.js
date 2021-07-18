@@ -7,11 +7,19 @@ const ProductOrderSchema = new Schema({
     type: Number,
     default: 1,
   },
-  trandemark: {
+  color: {
     type: String,
     default: null,
   },
-  nameproduct: {
+  size: {
+    type: Number,
+    default: null,
+  },
+  tradeMark: {
+    type: String,
+    default: null,
+  },
+  nameProduct: {
     type: String,
     default: null,
   },
@@ -23,4 +31,4 @@ const ProductOrderSchema = new Schema({
 
 const ProductOrder = mongoose.model("ProductOrder", ProductOrderSchema);
 
-module.epxorts = ProductOrder;
+module.exports = ProductOrder;

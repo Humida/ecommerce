@@ -2,30 +2,36 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // sub Schema
-const ProductOrder = require("../model/ProductOrder.model").Schema;
-const User = require("../model/User.model").Schema;
+const ProductOrder = require("../model/ProductOrder.model").schema;
+const User = require("../model/User.model").schema;
 
 const OrderSchema = new Schema({
   timeOrder: {
     type: Date,
     default: Date.now(),
   },
+  name: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
   phoneNumber: {
     type: String,
     default: null,
   },
   address: {
-    type: String,
+    type: Object,
     default: null,
   },
-  productOrder: [ProductOrder],
+  productsOrder: [ProductOrder],
   totalPayment: {
     type: Number,
     default: 0,
   },
   user: [
     {
-      type: mongoose.Shema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "User",
     },
   ],
@@ -40,4 +46,4 @@ const OrderSchema = new Schema({
 });
 
 const Order = mongoose.model("Order", OrderSchema);
-module.export = Order;
+module.exports = Order;
