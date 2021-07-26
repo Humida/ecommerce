@@ -1,72 +1,141 @@
+const asyncHandler = require("../middleware/asyncHandle");
+const queryString = require('querystring');
 const Product = require("../model/Product.model");
+const ResponseError = require("../utils/responseError");
 
-module.exports = {
-  createProduct: async (req, res, next) => {
-    try {
-      const images = req.files.map((image) => {
-        const hostname = "http://localhost:4000/image/";
-        const path = hostname.concat(image.filename);
-        return path;
-      });
-      const data = Object.assign({}, req.body, { images: images });
-      const product = new Product(data);
-      await product.save();
-      res.send(product);
-    } catch (error) {
-      console.log(error);
-    }
-  },
 
-  updateProduct: async (req, res, next) => {
-    try {
-      const data = Object.assign({}, req.body).data;
-      const id = req.body.id;
-      const product = await Product.findByIdAndUpdate({ _id: id }, data);
-      await product.save();
-    } catch (error) {
-      console.log(error);
-    }
-  },
+exports.createProduct = asyncHandler(async(req, res, next) => {
 
-  getProduct: async (req, res, next) => {
-    try {
-      // query parameter
-      const pagination = req.query;
-      const page = parseInt(pagination.page);
-      const limit = parseInt(pagination.limit);
+    const { quantity, tradeMark, nameProduct, price, classify, quantitySold, type } = req.body;
 
-      // body request
-      const conditionQuery = req.body;
-      const type = conditionQuery.type;
-      const sort = conditionQuery.sort;
+    console.log(req.body);
+    const product = await Product.create({
+        quantity,
+        tradeMark,
+        nameProduct,
+        price,
+        classify,
+        quantitySold,
+        type,
+    });
 
-      console.log(req.body);
+    res.status(200).send({
+        success: true,
+        product
+    });
 
-      await Product.find(type)
-        .sort(sort)
-        .skip(page * limit - limit)
-        .limit(limit)
-        .exec((err, products) => {
-          if (err) return res.send(400).send("Error");
-          const count = products.length;
-          const result = {
-            products: products,
-            current: page,
-            pages: Math.ceil(count / limit),
-          };
-          res.status(200).send(result);
+});
+
+exports.updateProduct = asyncHandler(async(req, res, next) => {
+
+    const data = Object.assign({}, req.body).data;
+    const id = req.body.id;
+    const product = await Product.findByIdAndUpdate({ _id: id }, data);
+    await product.save();
+
+    res.status(200).send({
+
+        success: true,
+        message: 'update complete',
+
+    })
+
+});
+
+exports.queryProducts = asyncHandler(async(req, res, next) => {
+
+    let query = {...req.query };
+
+    // filter
+
+    let excludedQuery = ['sort', 'page', 'limit', 'select'];
+
+    excludedQuery.forEach((element) => delete query[element]);
+
+    let queryStr = JSON.stringify(query);
+
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+
+    // console.log(queryStr);
+
+    // sort
+    let sortProduct;
+    let sort = req.query.sort;
+
+    sort = sort.split(',');
+
+    sort.map((item) => {
+        if (item.includes('-')) {
+            return { item: -1 };
+        } else {
+            return { item: 1 }
+        }
+
+    });
+
+
+
+    console.log('aaa', sort);
+
+    // select field
+
+
+
+    // paginate
+
+
+    // const pagination = req.query.pagination;
+    // const page = parseInt(pagination.page);
+    // const limit = parseInt(pagination.limit);
+
+
+
+    await Product
+        .find({})
+        .sort('-price -quantity')
+        .exec(async(err, products) => {
+            if (err)(next(new ResponseError('error database', 400)));
+
+            const count = await Product.count();
+
+            const result = {
+                products: products,
+                count: count,
+            };
+            res.status(200).send(result);
         });
-    } catch (error) {
-      throw error;
-    }
-  },
 
-  deleteProduct: async (req, res, next) => {
-    try {
-      const id = req.body.id;
-      Product.findOneAndDelete({ _id: id });
-    } catch (error) {
-      console.log(error);
+});
+
+exports.deleteProduct = asyncHandler(async(req, res, next) => {
+
+    const id = req.body.id;
+
+    Product.findOneAndDelete({ _id: id });
+
+    res.status(200).send({
+        success: true,
+        message: 'detete complete',
+    });
+
+});
+
+exports.getProduct = asyncHandler(async(req, res, next) => {
+
+    let id = req.params.id;
+
+    const products = await Product.find({ _id: id });
+
+    if (!products) {
+
+        next(new ErrorResponse(`Can not found product with id : ${id}`, 404));
+
     }
-  },
-};
+
+    res.status(200).send({
+        success: true,
+        product: products,
+        user: req.user,
+    });
+
+});

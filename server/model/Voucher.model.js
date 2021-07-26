@@ -5,27 +5,28 @@ const User = require("../model/User.model");
 const Product = require("./Product.model");
 
 const VoucherSchema = new Schema({
-  startDate: {
-    type: Date,
-  },
-  endDate: {
-    type: Date,
-  },
-  voucherName: {
-    type: String,
-  },
-  forProduct: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "Product",
+    startDate: {
+        type: Date,
+        default: Date.now(),
+        require: true,
     },
-  ],
-  forUser: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
+    endDate: {
+        type: Date,
+        require: true,
     },
-  ],
+    voucherName: {
+        type: String,
+        require: true,
+        maxlenght: [100, "vocher name can not be more than 100 charactor"],
+    },
+    products: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "Product",
+    }, ],
+    users: [{
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+    }, ],
 });
 
 const Voucher = mongoose.model("Voucher", VoucherSchema);
