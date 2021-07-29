@@ -1,24 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// const RateProduct = require("./RateProduct.model").schema;
-
-const RateProductSchema = new Schema({
-    user: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-    },
-    rate: {
-        type: Number,
-        require: [true, 'please add a rate (from 1 to 5 star)'],
-        default: 5,
-    },
-    comment: {
-        type: String,
-        maxlenght: [500, 'comment can not be more than 500 character'],
-    },
-});
-
 const PropertiesProduct = new Schema({
     images: {
         type: Array,
@@ -71,13 +53,15 @@ const ProductSchema = new Schema({
         type: String,
         required: [true, 'please add a type'],
     },
+    rate: {
+        type: Number,
+    },
     voucher: {
         type: String,
     },
     detail: {
         type: String,
     },
-    rate: [RateProductSchema],
     deleteSoft: {
         type: Boolean,
         default: false,

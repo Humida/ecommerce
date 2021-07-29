@@ -6,7 +6,7 @@ const ProductOrder = require("../model/ProductOrder.model").schema;
 const User = require("../model/User.model").schema;
 
 const OrderSchema = new Schema({
-    timeOrder: {
+    orderTime: {
         type: Date,
         default: Date.now(),
     },
@@ -21,7 +21,6 @@ const OrderSchema = new Schema({
     phoneNumber: {
         type: String,
         require: [true, 'please add one phone number'],
-        match: [],
     },
     address: {
         type: Object,
@@ -36,6 +35,7 @@ const OrderSchema = new Schema({
     user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
+        require: false,
     },
     deleteSoft: {
         type: Boolean,

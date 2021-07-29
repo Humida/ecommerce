@@ -3,12 +3,19 @@ const queryString = require('querystring');
 const Product = require("../model/Product.model");
 const ResponseError = require("../utils/responseError");
 
-
 exports.createProduct = asyncHandler(async(req, res, next) => {
-
-    const { quantity, tradeMark, nameProduct, price, classify, quantitySold, type } = req.body;
+    const {
+        quantity,
+        tradeMark,
+        nameProduct,
+        price,
+        classify,
+        quantitySold,
+        type
+    } = req.body;
 
     console.log(req.body);
+
     const product = await Product.create({
         quantity,
         tradeMark,
@@ -34,74 +41,60 @@ exports.updateProduct = asyncHandler(async(req, res, next) => {
     await product.save();
 
     res.status(200).send({
-
         success: true,
         message: 'update complete',
-
     })
 
 });
 
 exports.queryProducts = asyncHandler(async(req, res, next) => {
-
     let query = {...req.query };
-
     // filter
 
     let excludedQuery = ['sort', 'page', 'limit', 'select'];
-
     excludedQuery.forEach((element) => delete query[element]);
-
     let queryStr = JSON.stringify(query);
-
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 
-    // console.log(queryStr);
-
     // sort
-    let sortProduct;
+
     let sort = req.query.sort;
-
-    sort = sort.split(',');
-
-    sort.map((item) => {
-        if (item.includes('-')) {
-            return { item: -1 };
-        } else {
-            return { item: 1 }
-        }
-
-    });
-
-
-
-    console.log('aaa', sort);
+    if (sort) {
+        sort = sort.split(',').join(' ');
+    }
+    if (!sort) sort = {};
 
     // select field
 
-
+    let select = req.query.select;
+    console.log(select);
+    if (select) {
+        select = select.split(',').join(' ');
+    }
+    if (!select) select = '';
 
     // paginate
-
-
-    // const pagination = req.query.pagination;
-    // const page = parseInt(pagination.page);
-    // const limit = parseInt(pagination.limit);
-
-
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
 
     await Product
         .find({})
         .sort('-price -quantity')
+        .skip(page * limit - limit)
+        .limit(limit)
+        .select(select)
         .exec(async(err, products) => {
+
             if (err)(next(new ResponseError('error database', 400)));
 
             const count = await Product.count();
 
             const result = {
                 products: products,
-                count: count,
+                currentPage: page,
+                pages: Math.ceil(count / limit),
             };
+
             res.status(200).send(result);
         });
 
@@ -137,5 +130,4 @@ exports.getProduct = asyncHandler(async(req, res, next) => {
         product: products,
         user: req.user,
     });
-
 });

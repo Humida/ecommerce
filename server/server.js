@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const cors = require("cors");
 const express = require("express");
 const app = express();
+const main = require('./controller/mail.controller');
+
 // const bcrypt = require("bcrypt");
 const path = require("path");
 const errorHandle = require('./middleware/errorHandle');
@@ -18,7 +20,8 @@ db.connect();
 const authRouter = require("../server/router/auth.router");
 const productRouter = require("../server/router/product.router");
 const locationRouter = require("../server/router/dvhtvn");
-const orderRouter = require("../server/router/order.router");
+const orderRouter = require('../server/router/order.router');
+const rateRouter = require('../server/router/rate.router');
 
 // middleware
 app.use(morgan('combined'));
@@ -36,7 +39,7 @@ app.use("/auth", authRouter);
 app.use("/product", productRouter);
 app.use("/location", locationRouter);
 app.use("/order", orderRouter);
-
+app.use("/api", rateRouter);
 
 // middleware handle error
 app.use(errorHandle);

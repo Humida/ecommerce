@@ -58,7 +58,7 @@ exports.login = asyncHandler(async(req, res, next) => {
     res.status(200).send({
         sucess: true,
         token: token
-    })
+    });
 });
 
 
@@ -130,4 +130,4 @@ exports.deteteUser = asyncHandler(async(req, res, next) => {
         message: 'delete complete',
     })
 
-})
+});

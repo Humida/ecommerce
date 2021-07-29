@@ -35,4 +35,5 @@ router.route('/delete/:id').post(deleteProduct);
 // @access    prive admin
 router.route('/add').post(createProduct);
 
+
 module.exports = router;
