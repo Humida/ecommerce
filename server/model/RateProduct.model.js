@@ -32,6 +32,7 @@ const RateProductSchema = new Schema({
 
 RateProductSchema.statics.getAverageRating = async function(productId) {
 
+    console.log('mmm')
     const obj = await this.aggregate([{
 
         $match: { product: productId }
@@ -46,7 +47,7 @@ RateProductSchema.statics.getAverageRating = async function(productId) {
 
     try {
         await this.model("Product").findByIdAndUpdate(productId, {
-            rate: obj[0].averageRating
+            rate: obj[0].averageRating.toFixed(2),
         });
 
     } catch (error) {
@@ -57,12 +58,14 @@ RateProductSchema.statics.getAverageRating = async function(productId) {
 RateProductSchema.post("save", function() {
 
     this.constructor.getAverageRating(this.product);
+    console.log("da");
 
 });
 
 RateProductSchema.pre('remove', function() {
 
     this.constructor.getAverageRating(this.product);
+    console.log("bbdh")
 
 });
 

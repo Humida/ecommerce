@@ -1,6 +1,6 @@
 const User = require("../model/User.model");
 const asyncHandler = require('../middleware/asyncHandle');
-const ErrorResponse = require('../middleware/errorHandle');
+// const ResponseError = require('../utils/responseError');
 const bcrypt = require("bcrypt");
 const ResponseError = require("../utils/responseError");
 
@@ -40,15 +40,19 @@ exports.login = asyncHandler(async(req, res, next) => {
 
     if (!user) {
 
-        next(new ErrorResponse(`Can't not find user with email ${email}`), 404);
-
+        return next(new ResponseError(`Can't find user with email ${email}`), 404);
+        // khi hàm next() được thực thi thì
     }
+
+    console.log('aaaa') /* dòng này vẫn chạy*/
 
     let isMatch = await user.matchPassword(password);
 
+    console.log('bbbb') /* còn dòng này thì không*/
+
     if (!isMatch) {
 
-        next(new ErrorResponse('Password not match, try again'), 400);
+        return next(new ResponseError('Password not match, try again'), 400);
 
     }
 
@@ -76,7 +80,7 @@ exports.me = asyncHandler(async(req, res, next) => {
 
     if (!user) {
 
-        next(new ResponseError(`user not found with id : ${id}`, 404));
+        return next(new ResponseError(`user not found with id : ${id}`, 404));
 
     }
 
@@ -102,7 +106,7 @@ exports.update = asyncHandler(async(req, res, next) => {
 
     if (!user) {
 
-        next(new ResponseError(`can not update because user not fonnd with id : ${id}`), 404);
+        return next(new ResponseError(`can not update because user not fonnd with id : ${id}`), 404);
 
     }
     user.save();

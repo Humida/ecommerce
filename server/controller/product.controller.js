@@ -3,8 +3,14 @@ const queryString = require('querystring');
 const Product = require("../model/Product.model");
 const ResponseError = require("../utils/responseError");
 
+
+// @desc      add product
+// @route     post /product/add
+// @access    private role admin
+
 exports.createProduct = asyncHandler(async(req, res, next) => {
     const {
+
         quantity,
         tradeMark,
         nameProduct,
@@ -12,9 +18,17 @@ exports.createProduct = asyncHandler(async(req, res, next) => {
         classify,
         quantitySold,
         type
+
     } = req.body;
 
-    console.log(req.body);
+
+    const host = req.headers.host;
+
+    const photos = req.files.map((file) => {
+
+        return `$http://${host}/public/image/` + file.filename;
+
+    });
 
     const product = await Product.create({
         quantity,
@@ -24,6 +38,7 @@ exports.createProduct = asyncHandler(async(req, res, next) => {
         classify,
         quantitySold,
         type,
+        images,
     });
 
     res.status(200).send({
@@ -32,6 +47,10 @@ exports.createProduct = asyncHandler(async(req, res, next) => {
     });
 
 });
+
+// @desc      update product
+// @route     post /product/:id/update
+// @access    private role admin
 
 exports.updateProduct = asyncHandler(async(req, res, next) => {
 
@@ -46,6 +65,11 @@ exports.updateProduct = asyncHandler(async(req, res, next) => {
     })
 
 });
+
+
+// @desc      query product
+// @route     get /product/query
+// @access    public
 
 exports.queryProducts = asyncHandler(async(req, res, next) => {
     let query = {...req.query };
@@ -100,6 +124,10 @@ exports.queryProducts = asyncHandler(async(req, res, next) => {
 
 });
 
+// @desc      delete product
+// @route     delete /product/:id/delete
+// @access    private role admin
+
 exports.deleteProduct = asyncHandler(async(req, res, next) => {
 
     const id = req.body.id;
@@ -113,21 +141,28 @@ exports.deleteProduct = asyncHandler(async(req, res, next) => {
 
 });
 
+// @desc      get single product
+// @route     get /product/:id
+// @access    public
+
 exports.getProduct = asyncHandler(async(req, res, next) => {
 
     let id = req.params.id;
 
-    const products = await Product.find({ _id: id });
+    console.log(id);
 
-    if (!products) {
+    const product = await Product.findOne({ _id: id });
 
-        next(new ErrorResponse(`Can not found product with id : ${id}`, 404));
+    console.log(product);
+
+    if (!product) {
+
+        return next(new ResponseError(`Can not found product with id : ${id}`, 404));
 
     }
-
     res.status(200).send({
         success: true,
-        product: products,
+        product: product,
         user: req.user,
     });
 });
