@@ -1,13 +1,17 @@
 require("dotenv").config();
-const morgan = require('morgan');
+const morgan = require("morgan");
 const cors = require("cors");
 const express = require("express");
+const redis = require("redis");
+
 const app = express();
-const main = require('./controller/mail.controller');
+// const client = redis.createClient();
+
+const main = require("./controller/mail.controller");
 
 // const bcrypt = require("bcrypt");
 const path = require("path");
-const errorHandle = require('./middleware/errorHandle');
+const errorHandle = require("./middleware/errorHandle");
 
 // static folder
 app.use(express.static(path.join(__dirname, "/public")));
@@ -20,11 +24,11 @@ db.connect();
 const authRouter = require("../server/router/auth.router");
 const productRouter = require("../server/router/product.router");
 const locationRouter = require("../server/router/dvhtvn");
-const orderRouter = require('../server/router/order.router');
-const rateRouter = require('../server/router/rate.router');
+const orderRouter = require("../server/router/order.router");
+const rateRouter = require("../server/router/rate.router");
 
 // middleware
-app.use(morgan('combined'));
+app.use(morgan("combined"));
 app.use(express.json());
 app.use(
     express.urlencoded({
