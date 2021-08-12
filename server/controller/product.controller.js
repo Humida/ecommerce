@@ -121,13 +121,16 @@ exports.queryProducts = asyncHandler(async(req, res, next) => {
                 return next(new ResponseError("error database", 400));
             }
             try {
-                const count = await Product.countDocuments();
+                const count = await Product.countDocuments(queryStr);
 
                 const result = {
                     products: products,
                     currentPage: page,
                     pages: Math.ceil(count / limit),
                 };
+
+                console.log(count);
+
                 res.status(200).send(result);
             } catch (error) {
                 return next(new ResponseError("database error", 400));
